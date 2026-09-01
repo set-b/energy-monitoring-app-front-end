@@ -1,20 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import { getGreetingOneTest } from './api/energyService';
+import { getAllEnergyData, getGreetingOneTest } from './api/energyService';
 import { useEffect, useState } from 'react';
 
 export default function App() {
-
-  const [data, setData] = useState(null);
+  // loading is null
+  const [data, setData] = useState('loading...');
 
   useEffect(() => {
     // define + call inside the effect
     async function load() {
       try{
-        const result = await getGreetingOneTest();
+        const result = await getAllEnergyData();
         setData(result);
       } catch (err) {
-        console.error('fetch for greeting test failed!')
+        console.error('fetch for energy test failed!')
       }
     }
     load();
@@ -25,7 +25,7 @@ export default function App() {
       {/* <Text>Open up App.js to start working on your app!</Text> */}
       {/* <StatusBar style="auto" /> */}
       {/* this data is the greeting test to confirm that the connection */}
-      <Text>{ JSON.stringify(data.text) }</Text>
+      <Text>{ JSON.stringify(data) }</Text>
     </View>
   );
 }

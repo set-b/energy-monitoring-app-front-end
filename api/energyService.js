@@ -25,3 +25,9 @@ export async function getGreetingOneTest() {
     console.log(response)
     return response.data
 }
+
+export async function getAllEnergyData() {
+  const response = await client.get('/energy_data')
+  console.log(response)
+  return response.data
+}
