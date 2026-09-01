@@ -9,9 +9,9 @@ import { Platform } from 'react-native';
 // - Real device: use your computer's LAN IP, e.g. 192.168.1.42
 const getBaseUrl = () => {
   if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8080/api';
+    return 'http://10.0.2.2:8080/';
   }
-  return 'http://localhost:8080/api';
+  return 'http://localhost:8080/';
 };
 
 const client = axios.create({

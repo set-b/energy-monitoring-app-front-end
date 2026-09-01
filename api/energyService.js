@@ -18,3 +18,10 @@ export async function createReading(reading) {
   const response = await client.post('/readings', reading);
   return response.data;
 }
+
+// GET greeting test
+export async function getGreetingOneTest() {
+    const response = await client.get('/greetings/1')
+    console.log(response)
+    return response.data
+}
