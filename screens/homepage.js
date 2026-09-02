@@ -1,22 +1,99 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
 import { PixelSmileyClock } from "../components/pixelClock";
-import { getToday } from "../api/energyService";
+import { getToday, getBest } from "../api/energyService";
+import { Button } from "react-native";
+import { ColorTheme } from "../components/colorTheme";
+
+export function DebugHome({ debugSetter, setClockState, setBest, setRanges }) {
+	const handleRangeChange = (text) => {
+		const parsed = text
+			.split("|")
+			.map((group) => {
+				const [start, end, color] = group.split(",");
+				return { start: Number(start), end: Number(end), color };
+			})
+			.filter((r) => !isNaN(r.start) && !isNaN(r.end));
+		if (parsed.length > 0) setRanges(parsed);
+	};
+
+	return (
+		<View style={styles.debugPanel}>
+			<Button title="Close Debug" onPress={() => debugSetter(false)} />
+			<Button title="Set State: Happy" onPress={() => setClockState("happy")} />
+			<Button title="Set State: Sad" onPress={() => setClockState("sad")} />
+			<Button
+				title="Set State: Neutral"
+				onPress={() => setClockState("neutral")}
+			/>
+			<Text>Set Best Time (-1 to 5):</Text>
+			<TextInput
+				style={styles.debugInput}
+				keyboardType="numeric"
+				onChangeText={(val) => {
+					const num = parseInt(val);
+					if (!isNaN(num) && num >= -1 && num <= 5) {
+						setBest(num);
+					}
+				}}
+				placeholder="Enter -1 to 5"
+			/>
+			<Text>Ranges (start,end,color|start,end,color):</Text>
+			<TextInput
+				style={styles.debugInput}
+				placeholder="3.5,5.5,#D32F2F|8,10,#386A20"
+				onChangeText={(text) => handleRangeChange(text)}
+			/>
+		</View>
+	);
+}
 
 export default function HomePage() {
-	const insets = useSafeAreaInsets();
-
+	const [debug, setDebug] = useState(true);
+	const [clockState, setClockState] = useState("happy");
+	const [ranges, setRanges] = useState([
+		{ start: 3.5, end: 5.5, color: "#D32F2F" },
+	]);
 	const [production, setProduction] = useState(0.0);
 	const [consumption, setConsumption] = useState(0.0);
+	const [best, setBest] = useState(null);
+
+	// The maximum digits long mobiles can display is 3 digits, so convert to kilowatts after 1000 watts
+	const parseWatts = (value) =>
+		Math.abs(value) > 999
+			? Math.abs(Math.round(value / 1000))
+			: Math.round(value);
+	const parseUnit = (value) => (Math.abs(value) > 999 ? "kW" : "W");
+
+	const parseBest = (best) => {
+		const concat =
+			best == null
+				? "Loading information..."
+				: best === 0
+					? " is right now!"
+					: best < 0
+						? " not today"
+						: " is about " +
+							best +
+							" hour" +
+							(best === 1 ? "" : "s") +
+							" from now";
+		return concat;
+	};
 
 	useEffect(() => {
 		async function load() {
 			try {
 				const resultProduction = await getToday("production");
 				const resultConsumption = await getToday("consumption");
+				const resultBest = await getBest();
 				setProduction(resultProduction);
 				setConsumption(resultConsumption);
+
+				setBest(resultBest);
+				setClockState(
+					best === 0 ? "happy" : best > 0 && best < 3 ? "neutral" : "sad",
+				);
 			} catch (err) {
 				console.warn("Fetch for production today failed! See error below:");
 				console.error(err.message);
@@ -25,62 +102,89 @@ export default function HomePage() {
 		load();
 	}, []);
 
-	// The maximum digits long mobiles can display is 3 digits, so convert to kilowatts after 1000 watts
-	const parseWatts = (value) =>
-		value > 999 ? (value / 1000).toFixed(2) : value;
-	const parseUnit = (value) => (value > 999 ? "kW" : "W");
-
 	return (
-		<ScrollView
-			style={styles.safeArea}
-			contentContainerStyle={[
-				styles.container,
-				{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 120 },
-			]}
-		>
-			{/* Header */}
-			<View style={styles.header}>
-				<Text style={styles.title}>My House</Text>
-			</View>
-
-			{/* Main Content */}
-			<View style={styles.content}>
-				<View style={styles.textContainer}>
-					<Text style={styles.subHeading}>
-						The best time for Appliance use is:
-					</Text>
-					<Text style={styles.mainHeading}>Now!</Text>
+		<ScrollView style={styles.safeArea} contentContainerStyle={{ flexGrow: 1 }}>
+			<View style={styles.container}>
+				{/* Header */}
+				<View style={styles.header}>
+					<Text style={styles.title}>My House</Text>
 				</View>
 
-				{/* Clock Component */}
-				<View style={styles.clockSlot}>
-					<PixelSmileyClock />
-				</View>
+				{/* Main Content */}
+				<View style={styles.content}>
+					<View style={styles.textContainer}>
+						<Text style={styles.subHeading}>
+							{best && "The best time for using your appliances"}
+						</Text>
+						<Text style={styles.mainHeading}>{parseBest(best)}</Text>
+					</View>
 
-				{/* Cards */}
-				<View style={styles.cardsRow}>
-					<View style={styles.card}>
-						<Text style={styles.cardLabel}>Production</Text>
-						<View style={styles.valueWrapper}>
-							<View style={styles.valueRow}>
-								<Text style={styles.cardValue}>{parseWatts(production)}</Text>
-								<Text style={styles.cardUnit}>{parseUnit(production)}</Text>
+					{/* Clock Component */}
+					<View style={styles.clockSlot}>
+						<PixelSmileyClock ranges={ranges} state={clockState} />
+					</View>
+
+					{/* Cards */}
+					<View style={styles.cardsRow}>
+						<View
+							style={[
+								styles.card,
+								{
+									backgroundColor:
+										ColorTheme[
+											clockState === "happy"
+												? "green"
+												: clockState === "sad"
+													? "red"
+													: "yellow"
+										]?.bg,
+								},
+							]}
+						>
+							<Text style={styles.cardLabel}>Production</Text>
+							<View style={styles.valueWrapper}>
+								<View style={styles.valueRow}>
+									<Text style={styles.cardValue}>{parseWatts(production)}</Text>
+									<Text style={styles.cardUnit}>{parseUnit(production)}</Text>
+								</View>
+							</View>
+						</View>
+						<View
+							style={[
+								styles.card,
+								{
+									backgroundColor:
+										ColorTheme[
+											clockState === "happy"
+												? "green"
+												: clockState === "sad"
+													? "red"
+													: "yellow"
+										]?.bg,
+								},
+							]}
+						>
+							<Text style={styles.cardLabel}>Consumption</Text>
+							<View style={styles.valueWrapper}>
+								<View style={styles.valueRow}>
+									<Text style={styles.cardValue}>
+										{parseWatts(consumption)}
+									</Text>
+									<Text style={styles.cardUnit}>{parseUnit(consumption)}</Text>
+								</View>
 							</View>
 						</View>
 					</View>
-					<View style={styles.card}>
-						<Text style={styles.cardLabel}>Consumption</Text>
-						<View style={styles.valueWrapper}>
-							<View style={styles.valueRow}>
-								<Text style={styles.cardValue}>
-									{parseWatts(consumption)}
-								</Text>
-								<Text style={styles.cardUnit}>{parseUnit(consumption)}</Text>
-							</View>
-						</View>
-					</View>
 				</View>
 			</View>
+			{debug && (
+				<DebugHome
+					debugSetter={setDebug}
+					setClockState={setClockState}
+					setBest={setBest}
+					setRanges={setRanges}
+				/>
+			)}
 		</ScrollView>
 	);
 }
@@ -169,5 +273,12 @@ const styles = StyleSheet.create({
 		width: "100%",
 		alignItems: "center",
 		justifyContent: "center",
+	},
+	debugPanel: { padding: 20, backgroundColor: "#f0f0f0", marginTop: 20 },
+	debugInput: {
+		borderWidth: 1,
+		padding: 5,
+		backgroundColor: "white",
+		marginVertical: 5,
 	},
 });
