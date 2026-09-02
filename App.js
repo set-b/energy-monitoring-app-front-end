@@ -1,42 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { getAllEnergyData, getGreetingOneTest } from './api/energyService';
-import { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import HomePage from './screens/homepage';
+import NeighbourhoodPage from './screens/neighbourhoodpage';
+import SettingsPage from './screens/settingspage';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  // loading is null
-  const [data, setData] = useState('loading...');
-
-  useEffect(() => {
-    // define + call inside the effect
-    async function load() {
-      try{
-        const result = await getAllEnergyData();
-        setData(result);
-      } catch (err) {
-        console.error('fetch for energy test failed!')
-      }
-    }
-    load();
-  }, []);
-
   return (
-    <View style={styles.container}>
-      {/* <Text>Open up App.js to start working on your app!</Text> */}
-      {/* <StatusBar style="auto" /> */}
-      {/* this data is the greeting test to confirm that the connection */}
-      <div style={{ height: 'max-content', overflowY: 'auto' }}>
-        <Text>{ JSON.stringify(data) }</Text>
-      </div>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomePage} options={{ title: 'Home' }} />
+        <Stack.Screen name="Neighbourhood" component={NeighbourhoodPage} options={{ title: 'Neighbourhood' }} />
+        <Stack.Screen name="Settings" component={SettingsPage} options={{ title: 'Settings' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
