@@ -5,8 +5,8 @@ import { getToday } from "../api/energyService";
 
 export default function AppScreen() {
 	const [data, setData] = useState("loading...");
-	const [production, setProduction] = useState(null);
-	const [consumption, setConsumption] = useState(null);
+	const [production, setProduction] = useState(0.0);
+	const [consumption, setConsumption] = useState(0.0);
 
 	useEffect(() => {
 		async function load() {
@@ -22,6 +22,12 @@ export default function AppScreen() {
 		}
 		load();
 	}, []);
+
+	// The maximum digits long mobiles can display is 3 digits, so convert to kilowatts after 1000 watts
+	const parseWatts = (value) =>
+		value > 999 ? (value / 1000).toFixed(2) : value;
+	const parseUnit = (value) => (value > 999 ? "kW" : "W");
+
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<View style={styles.container}>
@@ -50,8 +56,8 @@ export default function AppScreen() {
 							<Text style={styles.cardLabel}>Production</Text>
 							<View style={styles.valueWrapper}>
 								<View style={styles.valueRow}>
-									<Text style={styles.cardValue}>{production}</Text>
-									<Text style={styles.cardUnit}>W</Text>
+									<Text style={styles.cardValue}>{parseWatts(production)}</Text>
+									<Text style={styles.cardUnit}>{parseUnit(production)}</Text>
 								</View>
 							</View>
 						</View>
@@ -59,8 +65,10 @@ export default function AppScreen() {
 							<Text style={styles.cardLabel}>Consumption</Text>
 							<View style={styles.valueWrapper}>
 								<View style={styles.valueRow}>
-									<Text style={styles.cardValue}>{consumption}</Text>
-									<Text style={styles.cardUnit}>W</Text>
+									<Text style={styles.cardValue}>
+										{parseWatts(consumption)}
+									</Text>
+									<Text style={styles.cardUnit}>{parseUnit(consumption)}</Text>
 								</View>
 							</View>
 						</View>
@@ -146,7 +154,7 @@ const styles = StyleSheet.create({
 		alignItems: "baseline", // Aligns the bottom of the unit with the number
 	},
 	cardValue: {
-		fontSize: 72,
+		fontSize: 64,
 		fontWeight: "bold",
 		color: "#FFFFFF",
 		lineHeight: 80, // Adjust this to tighten the gap

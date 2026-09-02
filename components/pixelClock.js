@@ -8,22 +8,22 @@ const THEMES = {
 			bg: "#D8E7CB", // Primary Container (soft sage/pistachio background)
 			accentRing: "#386A20", // Primary (vibrant accent arc)
 			faceDetails: "#191E19", // On Surface / On Primary Container (deep charcoal/dark green)
-			hourHand: "#191E19", // On Primary Container (high-contrast hand)
-			minuteHand: "#191E19", // On Primary Container (high-contrast hand)
+			hourHand: "#8ec378", // On Primary Container (high-contrast hand)
+			minuteHand: "#8ec378", // On Primary Container (high-contrast hand)
 		},
 		red: {
 			bg: "#FFDAD4", // Deeper/richer Error Container (stronger soft red background)
 			accentRing: "#D32F2F", // Material M3 High-Chroma Red (strong, bold active arc)
 			faceDetails: "#3B0907", // Deep mahogany charcoal (crisp contrast)
-			hourHand: "#3B0907", // Deep mahogany charcoal
-			minuteHand: "#3B0907", // Deep mahogany charcoal
+			hourHand: "#8ec378", // Deep mahogany charcoal
+			minuteHand: "#8ec378", // Deep mahogany charcoal
 		},
 		yellow: {
 			bg: "#FFDEA1", // Tertiary Container (soft warm amber/yellow background)
 			accentRing: "#7A5900", // Tertiary / Warm Accent (dark golden yellow active arc)
 			faceDetails: "#261900", // On Tertiary Container (deep charcoal/dark amber)
-			hourHand: "#261900", // On Tertiary Container
-			minuteHand: "#261900", // On Tertiary Container
+			hourHand: "#8ec378", // On Tertiary Container
+			minuteHand: "#8ec378", // On Tertiary Container
 		},
 	},
 	dark: {
@@ -31,22 +31,22 @@ const THEMES = {
 			bg: "#D8E7CB", // Primary Container (soft sage/pistachio background)
 			accentRing: "#386A20", // Primary (vibrant accent arc)
 			faceDetails: "#191E19", // On Surface / On Primary Container (deep charcoal/dark green)
-			hourHand: "#191E19", // On Primary Container (high-contrast hand)
-			minuteHand: "#191E19", // On Primary Container (high-contrast hand)
+			hourHand: "#8ec378", // On Primary Container (high-contrast hand)
+			minuteHand: "#8ec378", // On Primary Container (high-contrast hand)
 		},
 		red: {
 			bg: "#FFDAD4", // Deeper/richer Error Container (stronger soft red background)
 			accentRing: "#D32F2F", // Material M3 High-Chroma Red (strong, bold active arc)
 			faceDetails: "#3B0907", // Deep mahogany charcoal (crisp contrast)
-			hourHand: "#3B0907", // Deep mahogany charcoal
-			minuteHand: "#3B0907", // Deep mahogany charcoal
+			hourHand: "#8ec378", // Deep mahogany charcoal
+			minuteHand: "#8ec378", // Deep mahogany charcoal
 		},
 		yellow: {
 			bg: "#FFDEA1", // Tertiary Container (soft warm amber/yellow background)
 			accentRing: "#7A5900", // Tertiary / Warm Accent (dark golden yellow active arc)
 			faceDetails: "#261900", // On Tertiary Container (deep charcoal/dark amber)
-			hourHand: "#261900", // On Tertiary Container
-			minuteHand: "#261900", // On Tertiary Container
+			hourHand: "#8ec378", // On Tertiary Container
+			minuteHand: "#8ec378", // On Tertiary Container
 		},
 	},
 	// dark: {
@@ -136,6 +136,7 @@ export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
 						height="58"
 						rx="9"
 						fill={theme[smileyColor].hourHand}
+						opacity={0.8}
 					/>
 				</G>
 
@@ -148,6 +149,7 @@ export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
 						height="78"
 						rx="7"
 						fill={theme[smileyColor].minuteHand}
+						opacity={0.8}
 					/>
 				</G>
 
