@@ -31,3 +31,9 @@ export async function getAllEnergyData() {
   console.log(response)
   return response.data
 }
+// GET neighbourhood/community statistics 
+export async function getNeighbourhoodStats() {
+  const response = await client.get('/neighbourhood/stats')
+  console.log(response)
+  return response.data; 
+}
