@@ -5,64 +5,64 @@ import Svg, { Circle, Rect, Path, G } from "react-native-svg";
 const THEMES = {
 	light: {
 		green: {
-			bg: "#D8E7CB", // Primary Container (soft sage/pistachio background)
-			accentRing: "#386A20", // Primary (vibrant accent arc)
-			faceDetails: "#191E19", // On Surface / On Primary Container (deep charcoal/dark green)
-			hourHand: "#8ec378", // On Primary Container (high-contrast hand)
-			minuteHand: "#8ec378", // On Primary Container (high-contrast hand)
+			bg: "#D8E7CB",
+			accentRing: "#386A20",
+			faceDetails: "#191E19",
+			hourHand: "#8ec378",
+			minuteHand: "#8ec378",
 		},
 		red: {
-			bg: "#FFDAD4", // Deeper/richer Error Container (stronger soft red background)
-			accentRing: "#D32F2F", // Material M3 High-Chroma Red (strong, bold active arc)
-			faceDetails: "#3B0907", // Deep mahogany charcoal (crisp contrast)
-			hourHand: "#8ec378", // Deep mahogany charcoal
-			minuteHand: "#8ec378", // Deep mahogany charcoal
+			bg: "#FFDAD4",
+			accentRing: "#D32F2F",
+			faceDetails: "#3B0907",
+			hourHand: "#8ec378",
+			minuteHand: "#8ec378",
 		},
 		yellow: {
-			bg: "#FFDEA1", // Tertiary Container (soft warm amber/yellow background)
-			accentRing: "#7A5900", // Tertiary / Warm Accent (dark golden yellow active arc)
-			faceDetails: "#261900", // On Tertiary Container (deep charcoal/dark amber)
-			hourHand: "#8ec378", // On Tertiary Container
-			minuteHand: "#8ec378", // On Tertiary Container
+			bg: "#FFDEA1",
+			accentRing: "#7A5900",
+			faceDetails: "#261900",
+			hourHand: "#8ec378",
+			minuteHand: "#8ec378",
 		},
 	},
 	dark: {
 		green: {
-			bg: "#D8E7CB", // Primary Container (soft sage/pistachio background)
-			accentRing: "#386A20", // Primary (vibrant accent arc)
-			faceDetails: "#191E19", // On Surface / On Primary Container (deep charcoal/dark green)
-			hourHand: "#8ec378", // On Primary Container (high-contrast hand)
-			minuteHand: "#8ec378", // On Primary Container (high-contrast hand)
+			bg: "#D8E7CB",
+			accentRing: "#386A20",
+			faceDetails: "#191E19",
+			hourHand: "#8ec378",
+			minuteHand: "#8ec378",
 		},
 		red: {
-			bg: "#FFDAD4", // Deeper/richer Error Container (stronger soft red background)
-			accentRing: "#D32F2F", // Material M3 High-Chroma Red (strong, bold active arc)
-			faceDetails: "#3B0907", // Deep mahogany charcoal (crisp contrast)
-			hourHand: "#8ec378", // Deep mahogany charcoal
-			minuteHand: "#8ec378", // Deep mahogany charcoal
+			bg: "#FFDAD4",
+			accentRing: "#D32F2F",
+			faceDetails: "#3B0907",
+			hourHand: "#8ec378",
+			minuteHand: "#8ec378",
 		},
 		yellow: {
-			bg: "#FFDEA1", // Tertiary Container (soft warm amber/yellow background)
-			accentRing: "#7A5900", // Tertiary / Warm Accent (dark golden yellow active arc)
-			faceDetails: "#261900", // On Tertiary Container (deep charcoal/dark amber)
-			hourHand: "#8ec378", // On Tertiary Container
-			minuteHand: "#8ec378", // On Tertiary Container
+			bg: "#FFDEA1",
+			accentRing: "#7A5900",
+			faceDetails: "#261900",
+			hourHand: "#8ec378",
+			minuteHand: "#8ec378",
 		},
 	},
-	// dark: {
-	// 	bg: "#2D3B2D", // Dark muted green container
-	// 	accentRing: "#82C175", // Bright sage green active arc segment
-	// 	faceDetails: "#E8F5E9", // Off-white/light mint details
-	// 	hourHand: "#E8F5E9", // Off-white/light mint hour hand
-	// 	minuteHand: "#E8F5E9", // Off-white/light mint minute hand
-	// },
 };
 
-export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
+export const PixelSmileyClock = ({
+	size = 180,
+	state = "happy",
+	// Example range format: [{ start: 3.5, end: 5.5, color: "#386A20" }]
+	ranges = [
+		{ start: 3.5, end: 5.5, color: "#386A20" }, // 3:30 to 5:30 active segment
+	],
+}) => {
 	const [time, setTime] = useState(new Date());
 	const scheme = useColorScheme();
 	const theme = THEMES[scheme === "dark" ? "dark" : "light"];
-	const smileyState = state; // happy, sad, neutral
+	const smileyState = state;
 	const colorMap = {
 		happy: "green",
 		sad: "red",
@@ -76,10 +76,8 @@ export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
 		sad: "M 52 130  A 40 40 0 0 1  128 130",
 	};
 
-	const interval = 60; // in seconds
-
 	useEffect(() => {
-		const timer = setInterval(() => setTime(new Date()), interval * 1000);
+		const timer = setInterval(() => setTime(new Date()), 60000);
 		return () => clearInterval(timer);
 	}, []);
 
@@ -87,37 +85,65 @@ export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
 	const minutes = time.getMinutes();
 	const seconds = time.getSeconds();
 
-	// Rotation calculations
 	const hourAngle = (hours % 12) * 30 + minutes * 0.5;
 	const minuteAngle = minutes * 6 + seconds * 0.1;
+
+	// Arc calculations
+	const ringRadius = 80;
+	const ringStrokeWidth = 14;
+	const circumference = 2 * Math.PI * ringRadius;
 
 	return (
 		<View style={[styles.container, { width: size, height: size }]}>
 			<Svg width={size} height={size} viewBox="0 0 180 180">
-				{/* Clean Round Face */}
-				<Circle cx="90" cy="90" r="90" fill={theme[smileyColor].bg} />
+				{/* Background Outer Ring (Light track) */}
+				<Circle
+					cx="90"
+					cy="90"
+					r={ringRadius}
+					fill="none"
+					stroke={theme[smileyColor].bg}
+					strokeWidth={ringStrokeWidth}
+				/>
 
-				{/* the white sub background */}
-				<Circle cx="90" cy="90" r="70" fill={"#fff"} />
+				{/* --- DYNAMIC TIME RANGE ARCS --- */}
+				{ranges.map((range, index) => {
+					const startAngle = (range.start % 12) * 30 - 90;
+					const duration = (range.end - range.start + 12) % 12 || 12;
+					const arcLength = (duration / 12) * circumference;
+
+					return (
+						<Circle
+							key={index}
+							cx="90"
+							cy="90"
+							r={ringRadius}
+							fill="none"
+							stroke={range.color || theme[smileyColor].accentRing}
+							strokeWidth={ringStrokeWidth}
+							strokeDasharray={`${arcLength} ${circumference}`}
+							strokeLinecap="round"
+							transform={`rotate(${startAngle}, 90, 90)`}
+						/>
+					);
+				})}
+
+				{/* Inner White Face */}
+				<Circle cx="90" cy="90" r="70" fill="#fff" />
 
 				{/* --- SMILEY FACE ELEMENTS --- */}
-				{/* Left Eye */}
 				<Circle
 					cx="60"
 					cy="65"
 					r={smileyWidth}
 					fill={theme[smileyColor].faceDetails}
 				/>
-
-				{/* Right Eye */}
 				<Circle
 					cx="120"
 					cy="65"
 					r={smileyWidth}
 					fill={theme[smileyColor].faceDetails}
 				/>
-
-				{/* Smile Arc */}
 				<Path
 					d={smileyReactions[smileyState]}
 					fill="none"
@@ -127,7 +153,6 @@ export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
 				/>
 
 				{/* --- CLOCK HANDS --- */}
-				{/* Hour Hand (Thick Pill) */}
 				<G transform={`rotate(${hourAngle}, 90, 90)`}>
 					<Rect
 						x="81"
@@ -139,8 +164,6 @@ export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
 						opacity={0.8}
 					/>
 				</G>
-
-				{/* Minute Hand (Slightly Thinner & Longer) */}
 				<G transform={`rotate(${minuteAngle}, 90, 90)`}>
 					<Rect
 						x="83"
@@ -152,8 +175,6 @@ export const PixelSmileyClock = ({ size = 180, state = "happy" }) => {
 						opacity={0.8}
 					/>
 				</G>
-
-				{/* Center Pivot */}
 				<Circle cx="90" cy="90" r="6" fill={theme[smileyColor].hourHand} />
 			</Svg>
 		</View>

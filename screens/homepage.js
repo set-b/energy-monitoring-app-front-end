@@ -134,12 +134,6 @@ const styles = StyleSheet.create({
 		height: 140,
 		backgroundColor: "#8ECA78",
 		borderRadius: 24,
-	},
-	card: {
-		flex: 1,
-		height: 140,
-		backgroundColor: "#8ECA78",
-		borderRadius: 24,
 		padding: 16,
 		alignItems: "flex-start", // Change from center
 		justifyContent: "flex-start", // Change from center
