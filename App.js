@@ -6,6 +6,8 @@ import { Ionicons } from "@expo/vector-icons";
 import HomePage from "./screens/homepage";
 import NeighbourhoodPage from "./screens/neighbourhoodpage";
 import SettingsPage from "./screens/settingspage";
+// import { createNativeBottomTabNavigator } from "@react-navigation/bottom-tabs/unstable";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,9 +25,7 @@ function TabIcon({ focused, iconName, label }) {
 					color={focused ? ACTIVE_COLOR : INACTIVE_COLOR}
 				/>
 			</View>
-			<Text style={[styles.label, focused && styles.labelActive]}>
-				{label}
-			</Text>
+			<Text style={[styles.label, focused && styles.labelActive]}>{label}</Text>
 		</View>
 	);
 }
