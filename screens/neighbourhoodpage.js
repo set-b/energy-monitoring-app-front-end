@@ -1,13 +1,18 @@
 import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
 import { useEffect, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getUvIndex } from '../services/knmiService';
 import { getSunriseSunset } from '../services/sunriseService';
 // import { getNeighbourhoodStats } from '../api/energyService';
+// import { getSunlightForecast } from '../api/knmiService'; // KNMI sun forecast
 
+// --- status -> color helpers -------------------------------------------
+
+// carportHours: 0 = "now", up to 4 = soon, more than 4 = later
 function getCarportColor(hours) {
-  if (hours <= 0) return '#CFE9CF'; 
-  if (hours <= 4) return '#F5D9C3'; 
-  return '#F5D3D3'; 
+  if (hours <= 0) return '#CFE9CF'; // green - now
+  if (hours <= 4) return '#F5D9C3'; // orange - within 4 hours
+  return '#F5D3D3'; // pastel red - longer than 4 hours
 }
 
 function getCarportLabel(hours) {
@@ -20,11 +25,11 @@ function getCarportLabel(hours) {
 function getGridColor(status) {
   switch (status) {
     case 'surplus':
-      return '#CFE9CF'; 
+      return '#CFE9CF'; // green
     case 'balanced':
-      return '#F5D9C3'; 
+      return '#F5D9C3'; // orange
     case 'deficit':
-      return '#F5D3D3'; 
+      return '#F5D3D3'; // pastel red
     default:
       return '#eee';
   }
@@ -43,7 +48,11 @@ function getGridLabel(status) {
   }
 }
 
+// -------------------------------------------------------------------------
+
 export default function NeighbourhoodPage({ navigation }) {
+  const insets = useSafeAreaInsets();
+
   const [rank, setRank] = useState(null);
   const [moneySaved, setMoneySaved] = useState(null);
   const [energySaved, setEnergySaved] = useState(null);
@@ -104,7 +113,12 @@ export default function NeighbourhoodPage({ navigation }) {
   const gridLabel = getGridLabel(gridStatus);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 120 },
+      ]}
+    >
       <Text style={styles.rankText}>
         Your home ranks <Text style={styles.bold}>{rank ?? '...'}rd</Text> in the
         leadership board this month
@@ -115,7 +129,7 @@ export default function NeighbourhoodPage({ navigation }) {
       </Text>
 
       <View style={[styles.statCard, styles.shadow]}>
-        <Image source={require('../assets/communityicon.png')} style={styles.icon} />
+        <Text style={styles.icon}>👥</Text>
         <Text style={styles.statAmount}>€{moneySaved ?? '...'}</Text>
         <Text style={styles.statSub}>{energySaved ?? '...'}kwh</Text>
       </View>
@@ -160,7 +174,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    paddingVertical: 24,
     paddingHorizontal: 16,
   },
   title: {
@@ -266,8 +279,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
     marginBottom: 4,
   },
   shadow: {

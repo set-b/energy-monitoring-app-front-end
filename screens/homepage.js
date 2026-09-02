@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PixelSmileyClock } from "../components/pixelClock";
 import { getToday } from "../api/energyService";
 
 export default function HomePage() {
+	const insets = useSafeAreaInsets();
+
 	const [production, setProduction] = useState(0.0);
 	const [consumption, setConsumption] = useState(0.0);
 
@@ -28,53 +31,57 @@ export default function HomePage() {
 	const parseUnit = (value) => (value > 999 ? "kW" : "W");
 
 	return (
-		<SafeAreaView style={styles.safeArea}>
-			<View style={styles.container}>
-				{/* Header */}
-				<View style={styles.header}>
-					<Text style={styles.title}>My House</Text>
+		<ScrollView
+			style={styles.safeArea}
+			contentContainerStyle={[
+				styles.container,
+				{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 120 },
+			]}
+		>
+			{/* Header */}
+			<View style={styles.header}>
+				<Text style={styles.title}>My House</Text>
+			</View>
+
+			{/* Main Content */}
+			<View style={styles.content}>
+				<View style={styles.textContainer}>
+					<Text style={styles.subHeading}>
+						The best time for Appliance use is:
+					</Text>
+					<Text style={styles.mainHeading}>Now!</Text>
 				</View>
 
-				{/* Main Content */}
-				<View style={styles.content}>
-					<View style={styles.textContainer}>
-						<Text style={styles.subHeading}>
-							The best time for Appliance use is:
-						</Text>
-						<Text style={styles.mainHeading}>Now!</Text>
-					</View>
+				{/* Clock Component */}
+				<View style={styles.clockSlot}>
+					<PixelSmileyClock />
+				</View>
 
-					{/* Clock Component */}
-					<View style={styles.clockSlot}>
-						<PixelSmileyClock />
-					</View>
-
-					{/* Cards */}
-					<View style={styles.cardsRow}>
-						<View style={styles.card}>
-							<Text style={styles.cardLabel}>Production</Text>
-							<View style={styles.valueWrapper}>
-								<View style={styles.valueRow}>
-									<Text style={styles.cardValue}>{parseWatts(production)}</Text>
-									<Text style={styles.cardUnit}>{parseUnit(production)}</Text>
-								</View>
+				{/* Cards */}
+				<View style={styles.cardsRow}>
+					<View style={styles.card}>
+						<Text style={styles.cardLabel}>Production</Text>
+						<View style={styles.valueWrapper}>
+							<View style={styles.valueRow}>
+								<Text style={styles.cardValue}>{parseWatts(production)}</Text>
+								<Text style={styles.cardUnit}>{parseUnit(production)}</Text>
 							</View>
 						</View>
-						<View style={styles.card}>
-							<Text style={styles.cardLabel}>Consumption</Text>
-							<View style={styles.valueWrapper}>
-								<View style={styles.valueRow}>
-									<Text style={styles.cardValue}>
-										{parseWatts(consumption)}
-									</Text>
-									<Text style={styles.cardUnit}>{parseUnit(consumption)}</Text>
-								</View>
+					</View>
+					<View style={styles.card}>
+						<Text style={styles.cardLabel}>Consumption</Text>
+						<View style={styles.valueWrapper}>
+							<View style={styles.valueRow}>
+								<Text style={styles.cardValue}>
+									{parseWatts(consumption)}
+								</Text>
+								<Text style={styles.cardUnit}>{parseUnit(consumption)}</Text>
 							</View>
 						</View>
 					</View>
 				</View>
 			</View>
-		</SafeAreaView>
+		</ScrollView>
 	);
 }
 
@@ -84,9 +91,9 @@ const styles = StyleSheet.create({
 		backgroundColor: "#FFFFFF",
 	},
 	container: {
-		flex: 1,
+		flexGrow: 1,
 		paddingHorizontal: 24,
-		paddingBottom: 24,
+		alignItems: "center",
 	},
 	header: {
 		alignItems: "center",
@@ -98,10 +105,11 @@ const styles = StyleSheet.create({
 		color: "#1F1F1F",
 	},
 	content: {
-		flex: 1,
+		width: "100%",
 		alignItems: "center",
 		justifyContent: "space-between",
 		paddingVertical: 12,
+		gap: 24,
 	},
 	textContainer: {
 		alignItems: "center",
@@ -133,15 +141,9 @@ const styles = StyleSheet.create({
 		height: 140,
 		backgroundColor: "#8ECA78",
 		borderRadius: 24,
-	},
-	card: {
-		flex: 1,
-		height: 140,
-		backgroundColor: "#8ECA78",
-		borderRadius: 24,
 		padding: 16,
-		alignItems: "flex-start", // Change from center
-		justifyContent: "flex-start", // Change from center
+		alignItems: "flex-start",
+		justifyContent: "flex-start",
 	},
 	cardLabel: {
 		fontSize: 20,
@@ -150,13 +152,13 @@ const styles = StyleSheet.create({
 	},
 	valueRow: {
 		flexDirection: "row",
-		alignItems: "baseline", // Aligns the bottom of the unit with the number
+		alignItems: "baseline",
 	},
 	cardValue: {
 		fontSize: 64,
 		fontWeight: "bold",
 		color: "#FFFFFF",
-		lineHeight: 80, // Adjust this to tighten the gap
+		lineHeight: 80,
 	},
 	cardUnit: {
 		fontSize: 16,
