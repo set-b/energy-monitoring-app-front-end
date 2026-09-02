@@ -25,7 +25,9 @@ export default function App() {
       {/* <Text>Open up App.js to start working on your app!</Text> */}
       {/* <StatusBar style="auto" /> */}
       {/* this data is the greeting test to confirm that the connection */}
-      <Text>{ JSON.stringify(data) }</Text>
+      <div style={{ height: 'max-content', overflowY: 'auto' }}>
+        <Text>{ JSON.stringify(data) }</Text>
+      </div>
     </View>
   );
 }
