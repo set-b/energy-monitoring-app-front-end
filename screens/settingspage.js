@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Switch, TextInput, TouchableOpacity, ScrollView, Platform } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Switch,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Platform,
+} from "react-native";
 
 export default function SettingsScreen() {
   //toggles
@@ -12,6 +21,21 @@ export default function SettingsScreen() {
   //text input
   const [emailText, setEmailText] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
+  const [phoneErr, setPhoneErr] = useState("");
+  const handlePhone = (text) => {
+    const cleaned = text.replace(/[^0-9]/g, "");
+    if (cleaned.length <= 10) {
+      setPhoneNo(cleaned);
+
+      if (cleaned.length === 10) {
+        setPhoneErr("");
+      } else if (cleaned.length > 0) {
+        setPhoneErr("Phone number must be exactly 10 digits");
+      } else {
+        setPhoneErr("");
+      }
+    }
+  };
 
   const intervals = ["Morning", "Evening", "6 hours", "2 hours"];
 
@@ -94,13 +118,15 @@ export default function SettingsScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Phone number</Text>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, phoneErr ? styles.textInputError : null]}
             placeholder="123-456-789"
             placeholderTextColor="#A0AEC0"
             value={phoneNo}
-            onChangeText={setPhoneNo}
+            onChangeText={handlePhone}
             keyboardType="phone-pad"
+            maxLength={10}
           />
+          {phoneErr ? <Text style={styles.errorText}>{phoneErr}</Text> : null}
         </View>
       </ScrollView>
     </View>
@@ -198,5 +224,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#2D3748",
     backgroundColor: "#FAFAFA",
+  },
+  textInputError: {
+    borderColor: "#E53E3E",
+  },
+  errorText: {
+    color: "#E53E3E",
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: "500",
   },
 });
