@@ -22,6 +22,11 @@ export default function AppScreen() {
 				: best < 0
 					? " not today"
 					: " is about " + best + " hours from now";
+					: " is about " +
+						best +
+						" hour" +
+						(best === 1 ? "" : "s") +
+						" from now";
 		return concat;
 	};
 
