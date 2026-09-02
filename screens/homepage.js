@@ -47,10 +47,22 @@ export default function AppScreen() {
 					{/* Cards */}
 					<View style={styles.cardsRow}>
 						<View style={styles.card}>
-							<Text>{production}</Text>
+							<Text style={styles.cardLabel}>Production</Text>
+							<View style={styles.valueWrapper}>
+								<View style={styles.valueRow}>
+									<Text style={styles.cardValue}>{production}</Text>
+									<Text style={styles.cardUnit}>W</Text>
+								</View>
+							</View>
 						</View>
 						<View style={styles.card}>
-							<Text>{consumption}</Text>
+							<Text style={styles.cardLabel}>Consumption</Text>
+							<View style={styles.valueWrapper}>
+								<View style={styles.valueRow}>
+									<Text style={styles.cardValue}>{consumption}</Text>
+									<Text style={styles.cardUnit}>W</Text>
+								</View>
+							</View>
 						</View>
 					</View>
 				</View>
@@ -114,5 +126,39 @@ const styles = StyleSheet.create({
 		height: 140,
 		backgroundColor: "#8ECA78",
 		borderRadius: 24,
+	},
+	card: {
+		flex: 1,
+		height: 140,
+		backgroundColor: "#8ECA78",
+		borderRadius: 24,
+		padding: 16,
+		alignItems: "flex-start", // Change from center
+		justifyContent: "flex-start", // Change from center
+	},
+	cardLabel: {
+		fontSize: 20,
+		color: "#FFFFFF",
+		marginBottom: 0,
+	},
+	valueRow: {
+		flexDirection: "row",
+		alignItems: "baseline", // Aligns the bottom of the unit with the number
+	},
+	cardValue: {
+		fontSize: 72,
+		fontWeight: "bold",
+		color: "#FFFFFF",
+		lineHeight: 80, // Adjust this to tighten the gap
+	},
+	cardUnit: {
+		fontSize: 16,
+		color: "#FFFFFF",
+	},
+	valueWrapper: {
+		flex: 1,
+		width: "100%",
+		alignItems: "center",
+		justifyContent: "center",
 	},
 });
