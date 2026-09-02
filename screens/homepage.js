@@ -5,21 +5,21 @@ import { useEffect, useState } from 'react';
 export default function HomePage({ navigation }) {
   const [data, setData] = useState('loading...');
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const result = await getAllEnergyData();
-        setData(result);
-      } catch (err) {
-        console.error('fetch for energy test failed!');
-      }
-    }
-    load();
-  }, []);
+  // useEffect(() => {
+  //   async function load() {
+  //     try {
+  //       const result = await getAllEnergyData();
+  //       setData(result);
+  //     } catch (err) {
+  //       console.error('fetch for energy test failed!');
+  //     }
+  //   }
+  //   load();
+  // }, []);
 
   return (
     <View style={styles.container}>
-      <Text>{JSON.stringify(data)}</Text>
+      {/* <Text>{JSON.stringify(data[0])}</Text> */}
 
       <Button title="Go to Neighbourhood" onPress={() => navigation.navigate('Neighbourhood')} />
       <Button title="Go to Settings" onPress={() => navigation.navigate('Settings')} />
