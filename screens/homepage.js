@@ -67,15 +67,17 @@ export default function AppScreen() {
 
 	const parseBest = (best) => {
 		const concat =
-			best === 0
-				? " is right now!"
-				: best < 0
-					? " not today"
-					: " is about " +
-						best +
-						" hour" +
-						(best === 1 ? "" : "s") +
-						" from now";
+			best == null
+				? "Loading information..."
+				: best === 0
+					? " is right now!"
+					: best < 0
+						? " not today"
+						: " is about " +
+							best +
+							" hour" +
+							(best === 1 ? "" : "s") +
+							" from now";
 		return concat;
 	};
 
@@ -114,7 +116,7 @@ export default function AppScreen() {
 						<Text style={styles.subHeading}>
 							{best && "The best time for using your appliances"}
 						</Text>
-						<Text style={styles.mainHeading}>{best && parseBest(best)}</Text>
+						<Text style={styles.mainHeading}>{parseBest(best)}</Text>
 					</View>
 
 					{/* Clock Component */}
