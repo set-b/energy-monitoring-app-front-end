@@ -120,7 +120,21 @@ export default function AppScreen() {
 
 					{/* Cards */}
 					<View style={styles.cardsRow}>
-						<View style={styles.card}>
+						<View
+							style={[
+								styles.card,
+								{
+									backgroundColor:
+										ColorTheme[
+											clockState === "happy"
+												? "green"
+												: clockState === "sad"
+													? "red"
+													: "yellow"
+										]?.bg,
+								},
+							]}
+						>
 							<Text style={styles.cardLabel}>Production</Text>
 							<View style={styles.valueWrapper}>
 								<View style={styles.valueRow}>
