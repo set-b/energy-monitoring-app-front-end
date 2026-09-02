@@ -1,60 +1,38 @@
 import React from "react";
-import {
-	View,
-	Text,
-	StyleSheet,
-	SafeAreaView,
-	TouchableOpacity,
-} from "react-native";
-import Svg, { Path, Circle, Polyline } from "react-native-svg";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { PixelSmileyClock } from "../components/pixelClock";
-
-// Import your separate clock component here
-// import { PixelClockWidget } from './PixelClockWidget';
 
 export default function AppScreen() {
 	return (
-		<View style={styles.safeArea}>
+		<SafeAreaView style={styles.safeArea}>
 			<View style={styles.container}>
 				{/* Header */}
 				<View style={styles.header}>
 					<Text style={styles.title}>My House</Text>
 				</View>
 
-				{/* Main Body */}
+				{/* Main Content */}
 				<View style={styles.content}>
-					<Text style={styles.subHeading}>
-						The best time for Appliance use is:
-					</Text>
-					<Text style={styles.mainHeading}>Now!</Text>
+					<View style={styles.textContainer}>
+						<Text style={styles.subHeading}>
+							The best time for Appliance use is:
+						</Text>
+						<Text style={styles.mainHeading}>Now!</Text>
+					</View>
 
-					{/* CLOCK COMPONENT SLOT */}
+					{/* Clock Component */}
 					<View style={styles.clockSlot}>
-						{/* Replace this placeholder with <PixelClockWidget /> */}
-						{/* <View style={styles.clockPlaceholder}>
-							<Text style={styles.placeholderText}>[ Clock Component ]</Text>
-						</View> */}
 						<PixelSmileyClock />
 					</View>
 
-					{/* Carousel Dots */}
-					<View style={styles.dotsRow}>
-						<View style={styles.dot} />
-						<View style={styles.dot} />
-						<View style={[styles.dot, styles.activeDot]} />
-						<View style={styles.dot} />
-						<View style={styles.dot} />
-						<View style={styles.dot} />
-					</View>
-
-					{/* Content Cards */}
+					{/* Cards */}
 					<View style={styles.cardsRow}>
 						<View style={styles.card} />
 						<View style={styles.card} />
 					</View>
 				</View>
 			</View>
-		</View>
+		</SafeAreaView>
 	);
 }
 
@@ -65,77 +43,43 @@ const styles = StyleSheet.create({
 	},
 	container: {
 		flex: 1,
-		paddingHorizontal: 20,
-		justifyContent: "space-between",
+		paddingHorizontal: 24,
+		paddingBottom: 24,
 	},
 	header: {
 		alignItems: "center",
-		marginTop: 8,
-	},
-	headerTime: {
-		alignSelf: "flex-start",
-		fontSize: 14,
-		fontWeight: "600",
-		color: "#000000",
-		marginLeft: 12,
+		paddingVertical: 16,
 	},
 	title: {
-		fontSize: 16,
+		fontSize: 17,
 		fontWeight: "500",
 		color: "#1F1F1F",
-		marginTop: 4,
 	},
 	content: {
-		alignItems: "center",
 		flex: 1,
-		justifyContent: "center",
+		alignItems: "center",
+		justifyContent: "space-between",
+		paddingVertical: 12,
+	},
+	textContainer: {
+		alignItems: "center",
 	},
 	subHeading: {
-		fontSize: 15,
+		fontSize: 16,
 		color: "#1F1F1F",
+		textAlign: "center",
 	},
 	mainHeading: {
-		fontSize: 22,
+		fontSize: 24,
 		fontWeight: "600",
 		color: "#1F1F1F",
-		marginTop: 6,
-		marginBottom: 16,
+		marginTop: 8,
 	},
 	clockSlot: {
-		marginVertical: 10,
-		width: 200,
-		height: 200,
+		width: 220,
+		height: 220,
 		alignItems: "center",
 		justifyContent: "center",
-	},
-	clockPlaceholder: {
-		width: "100%",
-		height: "100%",
-		borderRadius: 100,
-		borderWidth: 2,
-		borderColor: "#D1E8CF",
-		borderStyle: "dashed",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	placeholderText: {
-		color: "#82C175",
-		fontWeight: "600",
-	},
-	dotsRow: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: 6,
-		marginVertical: 20,
-	},
-	dot: {
-		width: 6,
-		height: 6,
-		borderRadius: 3,
-		backgroundColor: "#D1D5DB",
-	},
-	activeDot: {
-		backgroundColor: "#1F1F1F",
 	},
 	cardsRow: {
 		flexDirection: "row",
@@ -144,57 +88,8 @@ const styles = StyleSheet.create({
 	},
 	card: {
 		flex: 1,
-		height: 110,
-		backgroundColor: "#82C175",
+		height: 140,
+		backgroundColor: "#8ECA78",
 		borderRadius: 24,
-	},
-	floatingBadge: {
-		position: "absolute",
-		right: 28,
-		bottom: 90,
-		width: 28,
-		height: 28,
-		backgroundColor: "#7A5299",
-		borderTopLeftRadius: 14,
-		borderTopRightRadius: 14,
-		borderBottomLeftRadius: 14,
-		borderBottomRightRadius: 4,
-		alignItems: "center",
-		justifyContent: "center",
-		elevation: 4,
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.2,
-		shadowRadius: 3,
-	},
-	bottomNav: {
-		height: 64,
-		backgroundColor: "#F5EEF8",
-		borderRadius: 32,
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-around",
-		paddingHorizontal: 8,
-		marginBottom: 8,
-	},
-	navItem: {
-		alignItems: "center",
-		gap: 3,
-	},
-	activeIconBg: {
-		backgroundColor: "#E8DEF8",
-		paddingHorizontal: 16,
-		paddingVertical: 4,
-		borderRadius: 16,
-	},
-	navLabel: {
-		fontSize: 11,
-		color: "#5F6368",
-		fontWeight: "500",
-	},
-	activeNavLabel: {
-		fontSize: 11,
-		color: "#1F1F1F",
-		fontWeight: "600",
 	},
 });
