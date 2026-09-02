@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { PixelSmileyClock } from "../components/pixelClock";
-import { getToday } from "../api/energyService";
+import { getToday, getBest } from "../api/energyService";
 
 export default function AppScreen() {
-	const [data, setData] = useState("loading...");
 	const [production, setProduction] = useState(0.0);
 	const [consumption, setConsumption] = useState(0.0);
-
-	useEffect(() => {
-		async function load() {
-			try {
-				const resultProduction = await getToday("production");
-				const resultConsumption = await getToday("consumption");
-				setProduction(resultProduction);
-				setConsumption(resultConsumption);
-			} catch (err) {
-				console.warn("Fetch for production today failed! See error below:");
-				console.error(err.message);
-			}
-		}
-		load();
-	}, []);
+	const [best, setBest] = useState(0);
 
 	// The maximum digits long mobiles can display is 3 digits, so convert to kilowatts after 1000 watts
 	const parseWatts = (value) =>
@@ -30,8 +15,35 @@ export default function AppScreen() {
 			: Math.round(value);
 	const parseUnit = (value) => (Math.abs(value) > 999 ? "kW" : "W");
 
+	const parseBest = (best) => {
+		const concat =
+			best === 0
+				? " is right now!"
+				: best < 0
+					? " not today"
+					: " is about " + best + " hours from now";
+		return concat;
+	};
+
+	useEffect(() => {
+		async function load() {
+			try {
+				const resultProduction = await getToday("production");
+				const resultConsumption = await getToday("consumption");
+				const resultBest = await getBest();
+				setProduction(resultProduction);
+				setConsumption(resultConsumption);
+				setBest(resultBest);
+			} catch (err) {
+				console.warn("Fetch for production today failed! See error below:");
+				console.error(err.message);
+			}
+		}
+		load();
+	}, []);
+
 	return (
-		<SafeAreaView style={styles.safeArea}>
+		<ScrollView style={styles.safeArea}>
 			<View style={styles.container}>
 				{/* Header */}
 				<View style={styles.header}>
@@ -42,14 +54,19 @@ export default function AppScreen() {
 				<View style={styles.content}>
 					<View style={styles.textContainer}>
 						<Text style={styles.subHeading}>
-							The best time for Appliance use is:
+							The best time for using your appliances
 						</Text>
-						<Text style={styles.mainHeading}>Now!</Text>
+						<Text style={styles.mainHeading}>{parseBest(best)}</Text>
 					</View>
 
 					{/* Clock Component */}
 					<View style={styles.clockSlot}>
-						<PixelSmileyClock />
+						<PixelSmileyClock
+							ranges={[
+								{ start: 3.5, end: 5.5, color: "#D32F2F" },
+								{ start: 8.5, end: 1, color: "#386A20" },
+							]}
+						/>
 					</View>
 
 					{/* Cards */}
@@ -59,10 +76,6 @@ export default function AppScreen() {
 							<View style={styles.valueWrapper}>
 								<View style={styles.valueRow}>
 									<Text style={styles.cardValue}>{parseWatts(production)}</Text>
-									{console.log(parseWatts(production))}
-									{console.log(production)}
-									{console.log(parseWatts(consumption))}
-									{console.log(consumption)}
 									<Text style={styles.cardUnit}>{parseUnit(production)}</Text>
 								</View>
 							</View>
@@ -81,7 +94,7 @@ export default function AppScreen() {
 					</View>
 				</View>
 			</View>
-		</SafeAreaView>
+		</ScrollView>
 	);
 }
 

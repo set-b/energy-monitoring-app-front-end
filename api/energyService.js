@@ -43,3 +43,9 @@ export async function getToday(option) {
 	const response = await client.get("/energy_data/today/" + option);
 	return response.data;
 }
+
+export async function getBest() {
+	// const response = await client.get("/energy_data/today/");
+	// return response.data;
+	return -1;
+}
