@@ -23,7 +23,7 @@ export default function HomePage({ navigation }) {
 
       <Button title="Go to Neighbourhood" onPress={() => navigation.navigate('Neighbourhood')} />
       <Button title="Go to Settings" onPress={() => navigation.navigate('Settings')} />
-    </ScrollView>
+    </View>
   );
 }
 
