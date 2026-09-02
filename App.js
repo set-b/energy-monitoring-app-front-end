@@ -5,7 +5,6 @@ import NeighbourhoodPage from "./screens/neighbourhoodpage";
 import SettingsPage from "./screens/settingspage";
 import { createNativeBottomTabNavigator } from "@react-navigation/bottom-tabs/unstable";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Platform } from "react-native";
 
 // native tabs doesnt seem to work on mobile either
 const Tab = false //Platform.OS !== 'web' ?
