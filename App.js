@@ -7,7 +7,6 @@ import HomePage from "./screens/homepage";
 import NeighbourhoodPage from "./screens/neighbourhoodpage";
 import SettingsPage from "./screens/settingspage";
 // import { createNativeBottomTabNavigator } from "@react-navigation/bottom-tabs/unstable";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 const Tab = createBottomTabNavigator();
 

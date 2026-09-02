@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { PixelSmileyClock } from "../components/pixelClock";
 import { getToday } from "../api/energyService";
 
-export default function AppScreen() {
-	const [data, setData] = useState("loading...");
+export default function HomePage() {
 	const [production, setProduction] = useState(0.0);
 	const [consumption, setConsumption] = useState(0.0);
 
