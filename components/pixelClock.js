@@ -1,54 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, useColorScheme } from "react-native";
 import Svg, { Circle, Rect, Path, G } from "react-native-svg";
+import { ColorTheme } from "./colorTheme";
 
 const THEMES = {
-	light: {
-		green: {
-			bg: "#D8E7CB",
-			accentRing: "#386A20",
-			faceDetails: "#191E19",
-			hourHand: "#8ec378",
-			minuteHand: "#8ec378",
-		},
-		red: {
-			bg: "#FFDAD4",
-			accentRing: "#D32F2F",
-			faceDetails: "#3B0907",
-			hourHand: "#8ec378",
-			minuteHand: "#8ec378",
-		},
-		yellow: {
-			bg: "#FFDEA1",
-			accentRing: "#7A5900",
-			faceDetails: "#261900",
-			hourHand: "#8ec378",
-			minuteHand: "#8ec378",
-		},
-	},
-	dark: {
-		green: {
-			bg: "#D8E7CB",
-			accentRing: "#386A20",
-			faceDetails: "#191E19",
-			hourHand: "#8ec378",
-			minuteHand: "#8ec378",
-		},
-		red: {
-			bg: "#FFDAD4",
-			accentRing: "#D32F2F",
-			faceDetails: "#3B0907",
-			hourHand: "#8ec378",
-			minuteHand: "#8ec378",
-		},
-		yellow: {
-			bg: "#FFDEA1",
-			accentRing: "#7A5900",
-			faceDetails: "#261900",
-			hourHand: "#8ec378",
-			minuteHand: "#8ec378",
-		},
-	},
+	light: ColorTheme,
+	dark: ColorTheme,
 };
 
 export const PixelSmileyClock = ({

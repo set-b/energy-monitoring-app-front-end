@@ -1,9 +1,59 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
 import { PixelSmileyClock } from "../components/pixelClock";
 import { getToday, getBest } from "../api/energyService";
+import { Button } from "react-native";
+import { ColorTheme } from "../components/colorTheme";
+
+export function DebugHome({ debugSetter, setClockState, setBest, setRanges }) {
+	const handleRangeChange = (text) => {
+		const parsed = text
+			.split("|")
+			.map((group) => {
+				const [start, end, color] = group.split(",");
+				return { start: Number(start), end: Number(end), color };
+			})
+			.filter((r) => !isNaN(r.start) && !isNaN(r.end));
+		if (parsed.length > 0) setRanges(parsed);
+	};
+
+	return (
+		<View style={styles.debugPanel}>
+			<Button title="Close Debug" onPress={() => debugSetter(false)} />
+			<Button title="Set State: Happy" onPress={() => setClockState("happy")} />
+			<Button title="Set State: Sad" onPress={() => setClockState("sad")} />
+			<Button
+				title="Set State: Neutral"
+				onPress={() => setClockState("neutral")}
+			/>
+			<Text>Set Best Time (-1 to 5):</Text>
+			<TextInput
+				style={styles.debugInput}
+				keyboardType="numeric"
+				onChangeText={(val) => {
+					const num = parseInt(val);
+					if (!isNaN(num) && num >= -1 && num <= 5) {
+						setBest(num);
+					}
+				}}
+				placeholder="Enter -1 to 5"
+			/>
+			<Text>Ranges (start,end,color|start,end,color):</Text>
+			<TextInput
+				style={styles.debugInput}
+				placeholder="3.5,5.5,#D32F2F|8,10,#386A20"
+				onChangeText={(text) => handleRangeChange(text)}
+			/>
+		</View>
+	);
+}
 
 export default function AppScreen() {
+	const [debug, setDebug] = useState(true);
+	const [clockState, setClockState] = useState("happy");
+	const [ranges, setRanges] = useState([
+		{ start: 3.5, end: 5.5, color: "#D32F2F" },
+	]);
 	const [production, setProduction] = useState(0.0);
 	const [consumption, setConsumption] = useState(0.0);
 	const [best, setBest] = useState(0);
@@ -21,7 +71,6 @@ export default function AppScreen() {
 				? " is right now!"
 				: best < 0
 					? " not today"
-					: " is about " + best + " hours from now";
 					: " is about " +
 						best +
 						" hour" +
@@ -66,12 +115,7 @@ export default function AppScreen() {
 
 					{/* Clock Component */}
 					<View style={styles.clockSlot}>
-						<PixelSmileyClock
-							ranges={[
-								{ start: 3.5, end: 5.5, color: "#D32F2F" },
-								{ start: 8.5, end: 1, color: "#386A20" },
-							]}
-						/>
+						<PixelSmileyClock ranges={ranges} state={clockState} />
 					</View>
 
 					{/* Cards */}
@@ -99,6 +143,14 @@ export default function AppScreen() {
 					</View>
 				</View>
 			</View>
+			{debug && (
+				<DebugHome
+					debugSetter={setDebug}
+					setClockState={setClockState}
+					setBest={setBest}
+					setRanges={setRanges}
+				/>
+			)}
 		</ScrollView>
 	);
 }
@@ -186,5 +238,12 @@ const styles = StyleSheet.create({
 		width: "100%",
 		alignItems: "center",
 		justifyContent: "center",
+	},
+	debugPanel: { padding: 20, backgroundColor: "#f0f0f0", marginTop: 20 },
+	debugInput: {
+		borderWidth: 1,
+		padding: 5,
+		backgroundColor: "white",
+		marginVertical: 5,
 	},
 });
