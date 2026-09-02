@@ -43,7 +43,7 @@ export default function AppScreen() {
 	}, []);
 
 	return (
-		<ScrollView style={styles.safeArea}>
+		<ScrollView style={styles.safeArea} contentContainerStyle={{ flexGrow: 1 }}>
 			<View style={styles.container}>
 				{/* Header */}
 				<View style={styles.header}>
