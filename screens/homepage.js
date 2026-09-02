@@ -1,8 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { PixelSmileyClock } from "../components/pixelClock";
+import { getToday } from "../api/energyService";
 
 export default function AppScreen() {
+	const [data, setData] = useState("loading...");
+	const [production, setProduction] = useState(null);
+	const [consumption, setConsumption] = useState(null);
+
+	useEffect(() => {
+		async function load() {
+			try {
+				const resultProduction = await getToday("production");
+				const resultConsumption = await getToday("consumption");
+				setProduction(resultProduction);
+				setConsumption(resultConsumption);
+			} catch (err) {
+				console.warn("Fetch for production today failed! See error below:");
+				console.error(err.message);
+			}
+		}
+		load();
+	}, []);
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<View style={styles.container}>
@@ -27,8 +46,12 @@ export default function AppScreen() {
 
 					{/* Cards */}
 					<View style={styles.cardsRow}>
-						<View style={styles.card} />
-						<View style={styles.card} />
+						<View style={styles.card}>
+							<Text>{production}</Text>
+						</View>
+						<View style={styles.card}>
+							<Text>{consumption}</Text>
+						</View>
 					</View>
 				</View>
 			</View>
