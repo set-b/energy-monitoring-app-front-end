@@ -25,8 +25,10 @@ export default function AppScreen() {
 
 	// The maximum digits long mobiles can display is 3 digits, so convert to kilowatts after 1000 watts
 	const parseWatts = (value) =>
-		value > 999 ? (value / 1000).toFixed(2) : value;
-	const parseUnit = (value) => (value > 999 ? "kW" : "W");
+		Math.abs(value) > 999
+			? Math.abs(Math.round(value / 1000))
+			: Math.round(value);
+	const parseUnit = (value) => (Math.abs(value) > 999 ? "kW" : "W");
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -57,6 +59,10 @@ export default function AppScreen() {
 							<View style={styles.valueWrapper}>
 								<View style={styles.valueRow}>
 									<Text style={styles.cardValue}>{parseWatts(production)}</Text>
+									{console.log(parseWatts(production))}
+									{console.log(production)}
+									{console.log(parseWatts(consumption))}
+									{console.log(consumption)}
 									<Text style={styles.cardUnit}>{parseUnit(production)}</Text>
 								</View>
 							</View>
