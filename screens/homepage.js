@@ -56,7 +56,7 @@ export default function AppScreen() {
 	]);
 	const [production, setProduction] = useState(0.0);
 	const [consumption, setConsumption] = useState(0.0);
-	const [best, setBest] = useState(0);
+	const [best, setBest] = useState(null);
 
 	// The maximum digits long mobiles can display is 3 digits, so convert to kilowatts after 1000 watts
 	const parseWatts = (value) =>
@@ -87,7 +87,11 @@ export default function AppScreen() {
 				const resultBest = await getBest();
 				setProduction(resultProduction);
 				setConsumption(resultConsumption);
+
 				setBest(resultBest);
+				setClockState(
+					best === 0 ? "happy" : best > 0 && best < 3 ? "neutral" : "sad",
+				);
 			} catch (err) {
 				console.warn("Fetch for production today failed! See error below:");
 				console.error(err.message);
@@ -108,9 +112,9 @@ export default function AppScreen() {
 				<View style={styles.content}>
 					<View style={styles.textContainer}>
 						<Text style={styles.subHeading}>
-							The best time for using your appliances
+							{best && "The best time for using your appliances"}
 						</Text>
-						<Text style={styles.mainHeading}>{parseBest(best)}</Text>
+						<Text style={styles.mainHeading}>{best && parseBest(best)}</Text>
 					</View>
 
 					{/* Clock Component */}
@@ -143,7 +147,21 @@ export default function AppScreen() {
 								</View>
 							</View>
 						</View>
-						<View style={styles.card}>
+						<View
+							style={[
+								styles.card,
+								{
+									backgroundColor:
+										ColorTheme[
+											clockState === "happy"
+												? "green"
+												: clockState === "sad"
+													? "red"
+													: "yellow"
+										]?.bg,
+								},
+							]}
+						>
 							<Text style={styles.cardLabel}>Consumption</Text>
 							<View style={styles.valueWrapper}>
 								<View style={styles.valueRow}>

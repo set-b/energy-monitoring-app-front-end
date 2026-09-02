@@ -45,7 +45,9 @@ export async function getToday(option) {
 }
 
 export async function getBest() {
-	// const response = await client.get("/energy_data/today/");
-	// return response.data;
-	return -1;
+	const response = await client.get(
+		"/energy_data/today/next-best-time/resident",
+	);
+	return response.data;
+	// return -1;
 }
