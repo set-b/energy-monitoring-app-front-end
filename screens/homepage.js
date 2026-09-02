@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ScrollView, Button } from 'react-native';
+import { StyleSheet, Text, ScrollView, View, Button } from 'react-native';
 import { getAllEnergyData } from '../api/energyService';
 import { useEffect, useState } from 'react';
 
