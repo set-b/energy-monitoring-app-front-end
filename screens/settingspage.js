@@ -8,9 +8,14 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  Button,
 } from "react-native";
+import {
+  sendApplianceNotification,
+  sendCarportNotification,
+} from "../services/notificationService";
 
-export default function SettingsScreen() {
+export default function SettingsPage({ navigation }) {
   //toggles
   const [mainNotif, setMainNotif] = useState(true);
   const [activeNotifType, setActiveNotifType] = useState("WhatsApp");
@@ -128,6 +133,25 @@ export default function SettingsScreen() {
           />
           {phoneErr ? <Text style={styles.errorText}>{phoneErr}</Text> : null}
         </View>
+
+        {/* Debug / testing section */}
+        <View style={styles.debugSection}>
+          <Text style={styles.sectionHeader}>Debug</Text>
+
+          <View style={styles.debugButton}>
+            <Button
+              title="Simulate Appliance Notification"
+              onPress={() => sendApplianceNotification(2)}
+            />
+          </View>
+
+          <View style={styles.debugButton}>
+            <Button
+              title="Simulate Carport Notification"
+              onPress={() => sendCarportNotification(2)}
+            />
+          </View>
+        </View>
       </ScrollView>
     </View>
   );
@@ -141,7 +165,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingBottom: 120,
+    paddingBottom: 140,
   },
   mainRow: {
     flexDirection: "row",
@@ -233,5 +257,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
     fontWeight: "500",
+  },
+  debugSection: {
+    marginTop: 30,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "#E2E8F0",
+    paddingTop: 20,
+  },
+  debugButton: {
+    marginBottom: 12,
   },
 });
