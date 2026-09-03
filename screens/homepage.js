@@ -164,7 +164,7 @@ export default function HomePage() {
 				<View style={styles.content}>
 					<View style={styles.textContainer}>
 						<Text style={styles.subHeading}>
-							{best && "The best time for using your appliances"}
+							{"The best time to use your appliances"}
 						</Text>
 						<Text style={styles.mainHeading}>{parseBest(best)}</Text>
 					</View>
