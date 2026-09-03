@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PixelSmileyClock } from "../components/pixelClock";
 import { getToday, getBest } from "../api/energyService";
 import { Button } from "react-native";
@@ -49,6 +50,8 @@ export function DebugHome({ debugSetter, setClockState, setBest, setRanges }) {
 }
 
 export default function HomePage() {
+	const insets = useSafeAreaInsets();
+
 	const [debug, setDebug] = useState(true);
 	const [clockState, setClockState] = useState("happy");
 	const [ranges, setRanges] = useState([
@@ -103,7 +106,13 @@ export default function HomePage() {
 	}, []);
 
 	return (
-		<ScrollView style={styles.safeArea} contentContainerStyle={{ flexGrow: 1 }}>
+		<ScrollView
+			style={styles.safeArea}
+			contentContainerStyle={[
+				{ flexGrow: 1 },
+				{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 120 },
+			]}
+		>
 			<View style={styles.container}>
 				{/* Header */}
 				<View style={styles.header}>
