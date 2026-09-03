@@ -3,16 +3,43 @@ import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getUvIndex } from '../services/knmiService';
 import { getSunriseSunset } from '../services/sunriseService';
-// import { getNeighbourhoodStats } from '../api/energyService';
-// import { getSunlightForecast } from '../api/knmiService'; // KNMI sun forecast
 
-// --- status -> color helpers -------------------------------------------
+// temporary Cloudflare tunnel for the backend
+const BASE_URL = 'https://personality-neighborhood-seattle-finest.trycloudflare.com';
+
+// mock values used whenever the real backend call fails
+const MOCK = {
+  carportHours: 2,
+  gridDelta: 3.4, 
+  energySaved: 113,
+  moneySaved: 46,
+};
+
+// fetches a JSON endpoint, falling back to a mock value if anything goes wrong
+async function fetchWithFallback(path, fallbackValue, parse = (json) => json) {
+  try {
+    const res = await fetch(`${BASE_URL}${path}`);
+    if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
+    const json = await res.json();
+    return parse(json);
+  } catch (err) {
+    console.warn(`fetch for ${path} failed, using mock data:`, err.message);
+    return fallbackValue;
+  }
+}
+
+// converts the energy delta (production - consumption) into a status string
+function gridStatusFromDelta(delta) {
+  if (delta > 2) return 'surplus';
+  if (delta < -2) return 'deficit';
+  return 'balanced';
+}
 
 // carportHours: 0 = "now", up to 4 = soon, more than 4 = later
 function getCarportColor(hours) {
-  if (hours <= 0) return '#CFE9CF'; // green - now
-  if (hours <= 4) return '#F5D9C3'; // orange - within 4 hours
-  return '#F5D3D3'; // pastel red - longer than 4 hours
+  if (hours <= 0) return '#CFE9CF'; 
+  if (hours <= 4) return '#F5D9C3'; 
+  return '#F5D3D3'; 
 }
 
 function getCarportLabel(hours) {
@@ -25,11 +52,11 @@ function getCarportLabel(hours) {
 function getGridColor(status) {
   switch (status) {
     case 'surplus':
-      return '#CFE9CF'; // green
+      return '#CFE9CF'; 
     case 'balanced':
-      return '#F5D9C3'; // orange
+      return '#F5D9C3'; 
     case 'deficit':
-      return '#F5D3D3'; // pastel red
+      return '#F5D3D3'; 
     default:
       return '#eee';
   }
@@ -48,7 +75,6 @@ function getGridLabel(status) {
   }
 }
 
-// -------------------------------------------------------------------------
 
 export default function NeighbourhoodPage({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -69,23 +95,35 @@ export default function NeighbourhoodPage({ navigation }) {
 
   useEffect(() => {
     async function loadCommunityStats() {
-      try {
-        // const result = await getNeighbourhoodStats();
-        // setRank(result.rank);
-        // setMoneySaved(result.moneySaved);
-        // setEnergySaved(result.energySaved);
-        // setCarportHours(result.carportHours);
-        // setGridStatus(result.gridStatus);
+      setRank(3);
 
-        // placeholder values until backend is wired up
-        setRank(3);
-        setMoneySaved(220);
-        setEnergySaved(10000);
-        setCarportHours(2);
-        setGridStatus('surplus');
-      } catch (err) {
-        console.error('fetch for neighbourhood stats failed!');
-      }
+      const [carport, delta, energy, money] = await Promise.all([
+        fetchWithFallback(
+          '/energy_data/today/next-best-time/carport',
+          MOCK.carportHours,
+          (json) => (typeof json === 'number' ? json : json.hours)
+        ),
+        fetchWithFallback(
+          '/energy_data/neighborhood/subtract/overall',
+          MOCK.gridDelta,
+          (json) => (typeof json === 'number' ? json : json.value)
+        ),
+        fetchWithFallback(
+          '/energy_data/savings/energy',
+          MOCK.energySaved,
+          (json) => (typeof json === 'number' ? json : json.value)
+        ),
+        fetchWithFallback(
+          '/energy_data/savings/money',
+          MOCK.moneySaved,
+          (json) => (typeof json === 'number' ? json : json.value)
+        ),
+      ]);
+
+      setCarportHours(carport);
+      setGridStatus(gridStatusFromDelta(delta));
+      setEnergySaved(energy);
+      setMoneySaved(money);
     }
 
     async function loadSunlightForecast() {
@@ -130,7 +168,9 @@ export default function NeighbourhoodPage({ navigation }) {
 
       <View style={[styles.statCard, styles.shadow]}>
         <Text style={styles.icon}>👥</Text>
-        <Text style={styles.statAmount}>€{moneySaved ?? '...'}</Text>
+        <Text style={styles.statAmount}>
+          €{moneySaved !== null ? moneySaved.toFixed(2) : '...'}
+        </Text>        
         <Text style={styles.statSub}>{energySaved ?? '...'}kwh</Text>
       </View>
 
