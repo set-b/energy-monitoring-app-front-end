@@ -49,7 +49,7 @@ export function DebugHome({ debugSetter, setClockState, setBest, setRanges }) {
 }
 
 export default function AppScreen() {
-	const [debug, setDebug] = useState(true);
+	const [debug, setDebug] = useState(false);
 	const [clockState, setClockState] = useState("happy");
 	const [ranges, setRanges] = useState([
 		{ start: 3.5, end: 5.5, color: "#D32F2F" },
@@ -57,6 +57,13 @@ export default function AppScreen() {
 	const [production, setProduction] = useState(0.0);
 	const [consumption, setConsumption] = useState(0.0);
 	const [best, setBest] = useState(null);
+
+	// Timer for the time range
+	const [time, setTime] = useState(new Date());
+	useEffect(() => {
+		const timer = setInterval(() => setTime(new Date()), 60000);
+		return () => clearInterval(timer);
+	}, []);
 
 	// The maximum digits long mobiles can display is 3 digits, so convert to kilowatts after 1000 watts
 	const parseWatts = (value) =>
@@ -80,27 +87,62 @@ export default function AppScreen() {
 							" from now";
 		return concat;
 	};
-
 	useEffect(() => {
+		let isMounted = true;
+
 		async function load() {
 			try {
 				const resultProduction = await getToday("production");
 				const resultConsumption = await getToday("consumption");
 				const resultBest = await getBest();
+
+				if (!isMounted) return;
+
 				setProduction(resultProduction);
 				setConsumption(resultConsumption);
-
 				setBest(resultBest);
+
+				// 1. Fix stale closure: Use resultBest directly, not state 'best'
 				setClockState(
-					best === 0 ? "happy" : best > 0 && best < 3 ? "neutral" : "sad",
+					resultBest === 0
+						? "happy"
+						: resultBest > 0 && resultBest < 3
+							? "neutral"
+							: "sad",
 				);
+
+				const now = new Date();
+				const bestTime = best + (now.getHours() + now.getMinutes() / 60);
+				if (best != -1)
+					setRanges([
+						{
+							start: bestTime,
+							end: bestTime + (Math.random() * 2 + 1),
+							color: ColorTheme.green.accentRing,
+						},
+					]);
+				else setRanges([]);
+				console.log("best time:", best);
+				console.log("current time:", now);
+				console.log(ranges);
 			} catch (err) {
-				console.warn("Fetch for production today failed! See error below:");
+				console.warn("Fetch failed! See error below:");
 				console.error(err.message);
 			}
 		}
+
+		// Immediate initial fetch
 		load();
-	}, []);
+
+		// 2. Poll fast (1s) if best is null, poll slow (60s) once best is fetched
+		const pollRate = best === null ? 1000 : 60000;
+		const intervalId = setInterval(load, pollRate);
+
+		return () => {
+			isMounted = false;
+			clearInterval(intervalId);
+		};
+	}, [best]); // 3. Re-run when 'best' changes so setInterval updates its delay
 
 	return (
 		<ScrollView style={styles.safeArea} contentContainerStyle={{ flexGrow: 1 }}>
@@ -198,6 +240,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 24,
 		paddingBottom: 24,
+		marginTop: 24,
 	},
 	header: {
 		alignItems: "center",
